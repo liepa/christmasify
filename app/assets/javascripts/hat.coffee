@@ -8,12 +8,12 @@ class Christmasify
     '.navbar-brand' # for bootstrap
   ]
 
-  image: '<img src="<%= asset_data_uri('santas-hat.png') %>" class="santas-hat" />'
+  hat: '<div class="santas-hat"></div>'
 
   init: (selector=null)->
     logoSelectors = @logoSelectors.concat selector
     logoSelectors.each (logo)=>
-      jQuery(logo).append(@image)
+      jQuery(logo).append(@hat)
 
 $ ->
   christmasify = new Christmasify()

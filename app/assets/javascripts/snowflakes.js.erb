@@ -1,0 +1,134 @@
+jQuery(function($){
+  var renderer,
+    scene,
+    camera,
+    cameraRadius = 50.0,
+    cameraTarget,
+    cameraX = 0,
+    cameraY = 0,
+    cameraZ = cameraRadius,
+    particleSystem,
+    particleSystemHeight = 100.0,
+    clock,
+    controls,
+    parameters,
+    onParametersUpdate,
+    texture,
+    header;
+
+    init();
+
+    setTimeout(function(){
+      animate();
+    }, 2500)
+
+
+
+  function init() {
+    header = document.getElementById('header_container');
+
+    if (window.WebGLRenderingContext) {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    } else {
+      renderer = new THREE.CanvasRenderer({ antialias: true, alpha: true });
+    }
+
+    renderer.setSize( header.clientWidth, header.clientHeight );
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+    cameraTarget = new THREE.Vector3( 0, 0, 0 );
+
+    texture = THREE.ImageUtils.loadTexture( '<%= asset_url("snowflake.png") %>' );
+
+    var numParticles = 200,
+      width = particleSystemHeight,
+      height = particleSystemHeight,
+      depth = 50,
+      parameters = {
+        color: 0xFFFFFF,
+        height: particleSystemHeight,
+        radiusX: 2.5,
+        radiusZ: 2.5,
+        size: 100,
+        scale: 6.0,
+        opacity: 1,
+        speedH: 1.0,
+        speedV: 1.0
+      },
+      systemGeometry = new THREE.Geometry(),
+      systemMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          color:  { type: 'c', value: new THREE.Color( parameters.color ) },
+          height: { type: 'f', value: parameters.height },
+          elapsedTime: { type: 'f', value: 0 },
+          radiusX: { type: 'f', value: parameters.radiusX },
+          radiusZ: { type: 'f', value: parameters.radiusZ },
+          size: { type: 'f', value: parameters.size },
+          scale: { type: 'f', value: parameters.scale },
+          opacity: { type: 'f', value: parameters.opacity },
+          texture: { type: 't', value: texture },
+          speedH: { type: 'f', value: parameters.speedH },
+          speedV: { type: 'f', value: parameters.speedV }
+        },
+        vertexShader: document.getElementById( 'christmasify_vertex' ).textContent,
+        fragmentShader: document.getElementById( 'christmasify_fragment' ).textContent,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthTest: false
+      });
+
+    for( var i = 0; i < numParticles; i++ ) {
+      var vertex = new THREE.Vector3(
+          rand( width ),
+          Math.random() * height,
+          rand( depth )
+        );
+
+      systemGeometry.vertices.push( vertex );
+    }
+
+    particleSystem = new THREE.ParticleSystem( systemGeometry, systemMaterial );
+    particleSystem.position.y = -height/2;
+
+    scene.add( particleSystem );
+
+    clock = new THREE.Clock();
+
+    var header = document.getElementById('header_container');
+    renderer.domElement.style.top = '-' + header.clientHeight + 'px';
+    header.appendChild( renderer.domElement );
+  }
+
+  function onMouseWheel( e ) {
+    e.preventDefault();
+
+    if( e.wheelDelta ) {
+      cameraZ += e.wheelDelta * 0.05;
+    } else if( e.detail ) {
+      cameraZ += e.detail * 0.5;
+    }
+  }
+
+  function rand( v ) {
+    return (v * (Math.random() - 0.5));
+  }
+
+  function animate() {
+    requestAnimationFrame( animate );
+
+    var delta = clock.getDelta(),
+      elapsedTime = clock.getElapsedTime();
+
+    particleSystem.material.uniforms.elapsedTime.value = elapsedTime * 10;
+
+    camera.position.set( cameraX, cameraY, cameraZ );
+    camera.lookAt( cameraTarget );
+
+    renderer.clear();
+    renderer.render( scene, camera );
+
+    $('canvas').animate({top: 0}, 2000);
+  }
+});
