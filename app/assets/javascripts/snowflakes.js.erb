@@ -16,18 +16,17 @@ jQuery(function($){
     texture,
     header;
 
-    init();
+  init();
 
-    setTimeout(function(){
-      animate();
-    }, 2500)
-
+  setTimeout(function(){
+    animate();
+  }, 2500)
 
 
   function init() {
     header = document.getElementById('header_container');
 
-    if (window.WebGLRenderingContext) {
+    if (Detector.webgl) {
       renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } else {
       renderer = new THREE.CanvasRenderer({ antialias: true, alpha: true });
