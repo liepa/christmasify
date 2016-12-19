@@ -39,10 +39,6 @@ module Christmasify
             gl_FragColor = texColor * vec4( color, opacity );
           }
         </script>
-
-        <script type=\"text/javascript\">
-
-        </script>
         ".html_safe
       end
 
