@@ -20,9 +20,7 @@ jQuery(function($){
 
     setTimeout(function(){
       animate();
-    }, 2500)
-
-
+    }, 2500);
 
   function init() {
     header = document.getElementById('header_container');
@@ -40,7 +38,7 @@ jQuery(function($){
     camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
     cameraTarget = new THREE.Vector3( 0, 0, 0 );
 
-    texture = THREE.ImageUtils.loadTexture( '<%= asset_url("snowflake.png") %>' );
+    texture = THREE.ImageUtils.loadTexture( '<%= asset_url("christmasify/snowflake.png") %>' );
 
     var numParticles = 200,
       width = particleSystemHeight,
@@ -51,7 +49,7 @@ jQuery(function($){
         height: particleSystemHeight,
         radiusX: 2.5,
         radiusZ: 2.5,
-        size: 100,
+        size: 200,
         scale: 6.0,
         opacity: 1,
         speedH: 1.0,
@@ -96,19 +94,8 @@ jQuery(function($){
 
     clock = new THREE.Clock();
 
-    var header = document.getElementById('header_container');
     renderer.domElement.style.top = '-' + header.clientHeight + 'px';
     header.appendChild( renderer.domElement );
-  }
-
-  function onMouseWheel( e ) {
-    e.preventDefault();
-
-    if( e.wheelDelta ) {
-      cameraZ += e.wheelDelta * 0.05;
-    } else if( e.detail ) {
-      cameraZ += e.detail * 0.5;
-    }
   }
 
   function rand( v ) {
