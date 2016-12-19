@@ -1,0 +1,15 @@
+$xmas_hat_size: 42px;
+$xmas_hat_position_left: 20px;
+$xmas_hat_position_top: 0px;
+
+.santas-hat {
+  position: absolute;
+  left: $xmas_hat_position_left;
+  top: $xmas_hat_position_top;
+  z-index: 10;
+  width: $xmas_hat_size;
+  height: $xmas_hat_size;
+  transform: rotate(-20deg);
+  background: asset-url("christmasify/santas-hat.png") no-repeat transparent center center;
+  background-size: $xmas_hat_size $xmas_hat_size;
+}
