@@ -45,6 +45,10 @@ module Christmasify
         </script>
         ".html_safe
       end
+
+      def santas_hat
+        content_tag :div, "", class: "santas-hat"
+      end
     end
   end
 end
