@@ -1,44 +1,37 @@
-jQuery(function($){
-  var renderer,
-    scene,
-    camera,
-    cameraRadius = 50.0,
-    cameraTarget,
-    cameraX = 0,
-    cameraY = 0,
-    cameraZ = cameraRadius,
-    particleSystem,
-    particleSystemHeight = 100.0,
-    clock,
-    controls,
-    parameters,
-    onParametersUpdate,
-    texture,
-    header;
+Christmasify["snow"] = {
+  renderer: null,
+  scene: null,
+  camera: null,
+  cameraTarget: null,
+  cameraX: 0,
+  cameraY: 0,
+  cameraZ: 50.0,
+  particleSystem: null,
+  clock: null,
+  controls: null,
+  parameters: null,
+  onParametersUpdate: null,
 
-    init();
+  init: function(selectorId) {
+    this.initAnimation();
 
-    setTimeout(function(){
-      animate();
-    }, 2500);
-
-  function init() {
-    header = document.getElementById('header_container');
+    var header = document.getElementById(selectorId);
+    var particleSystemHeight = 100.0;
 
     if (window.WebGLRenderingContext) {
-      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     } else {
-      renderer = new THREE.CanvasRenderer({ antialias: true, alpha: true });
+      this.renderer = new THREE.CanvasRenderer({ antialias: true, alpha: true });
     }
 
-    renderer.setSize( header.clientWidth, header.clientHeight );
+    this.renderer.setSize( header.clientWidth, header.clientHeight );
 
-    scene = new THREE.Scene();
+    this.scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
-    cameraTarget = new THREE.Vector3( 0, 0, 0 );
+    this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 10000 );
+    this.cameraTarget = new THREE.Vector3( 0, 0, 0 );
 
-    texture = THREE.ImageUtils.loadTexture( '<%= asset_url("christmasify/snowflake.png") %>' );
+    var texture = THREE.ImageUtils.loadTexture( '<%= image_url("christmasify/snowflake.png") %>' );
 
     var numParticles = 200,
       width = particleSystemHeight,
@@ -79,43 +72,48 @@ jQuery(function($){
 
     for( var i = 0; i < numParticles; i++ ) {
       var vertex = new THREE.Vector3(
-          rand( width ),
+          this.rand( width ),
           Math.random() * height,
-          rand( depth )
+          this.rand( depth )
         );
 
       systemGeometry.vertices.push( vertex );
     }
 
-    particleSystem = new THREE.ParticleSystem( systemGeometry, systemMaterial );
-    particleSystem.position.y = -height/2;
+    this.particleSystem = new THREE.PointCloud( systemGeometry, systemMaterial );
+    this.particleSystem.position.y = -height/2;
 
-    scene.add( particleSystem );
+    this.scene.add( this.particleSystem );
 
-    clock = new THREE.Clock();
+    this.clock = new THREE.Clock();
 
-    renderer.domElement.style.top = '-' + header.clientHeight + 'px';
-    header.appendChild( renderer.domElement );
-  }
+    this.renderer.domElement.style.top = -1.5 * header.clientHeight + 'px';
+    header.appendChild( this.renderer.domElement );
+  },
 
-  function rand( v ) {
+  initAnimation: function() {
+    setTimeout(function(){
+      Christmasify.snow.animate();
+      jQuery('canvas').animate({top: 0}, 3000);
+    }, 2500);
+  },
+
+  rand: function(v) {
     return (v * (Math.random() - 0.5));
+  },
+
+  animate: function() {
+    requestAnimationFrame( Christmasify.snow.animate );
+
+    var delta = Christmasify.snow.clock.getDelta(),
+      elapsedTime = Christmasify.snow.clock.getElapsedTime();
+
+    Christmasify.snow.particleSystem.material.uniforms.elapsedTime.value = elapsedTime * 10;
+
+    Christmasify.snow.camera.position.set( Christmasify.snow.cameraX, Christmasify.snow.cameraY, Christmasify.snow.cameraZ );
+    Christmasify.snow.camera.lookAt( Christmasify.snow.cameraTarget );
+
+    Christmasify.snow.renderer.clear();
+    Christmasify.snow.renderer.render( Christmasify.snow.scene, Christmasify.snow.camera );
   }
-
-  function animate() {
-    requestAnimationFrame( animate );
-
-    var delta = clock.getDelta(),
-      elapsedTime = clock.getElapsedTime();
-
-    particleSystem.material.uniforms.elapsedTime.value = elapsedTime * 10;
-
-    camera.position.set( cameraX, cameraY, cameraZ );
-    camera.lookAt( cameraTarget );
-
-    renderer.clear();
-    renderer.render( scene, camera );
-
-    $('canvas').animate({top: 0}, 2000);
-  }
-});
+};
