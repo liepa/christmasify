@@ -1,12 +1,16 @@
 # Christmasify
 
-Adds Santas hat to page logo
+1) Adds Santas hat to page logo
+
+2) Adds snow effect using three.js and canvas
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
-    gem 'christmasify', git: 'https://github.com/liepa/christmasify.git'
+  ```ruby
+  gem 'christmasify', git: 'https://github.com/liepa/christmasify.git'
+  ```
 
 And then execute:
 
@@ -17,20 +21,41 @@ Or install it yourself as:
     $ gem install christmasify
 
 
-## Installation
+### Santas hat
 
-  The christmasify file will be added to the asset pipeline and available for you to use. If they're not already in `app/assets/javascripts/application.js` by default, add these lines:
+  application.css
+  ```css
+  *= require christmasify/hat
+  ```
+
+  in view (parent element should be positioned relative)
+  ```ruby
+  <%= santas_hat %>
+  ```
+
+### Snow
+
+  application.css
+  ```css
+  *= require christmasify/snow
+  ```
 
   application.js:
   ```js
   //= require christmasify
   ```
 
-  application.css
-  ```css
-  *= require christmasify
+  in view where snow will be rendered
+  ```ruby
+  <%= snow %>
   ```
 
+  And initialize snow on page ready (jQuery example)
+  ```js
+  jQuery(function(){
+    Christmasify.snow.init('header_container');
+  });
+  ```
 
 ## Contributing
 
