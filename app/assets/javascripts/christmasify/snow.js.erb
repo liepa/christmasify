@@ -11,8 +11,10 @@ Christmasify["snow"] = {
   controls: null,
   parameters: null,
   onParametersUpdate: null,
+  animationFrame: null,
 
   init: function(selectorId) {
+    if (document.addEventListener) document.addEventListener("visibilitychange", this.visibilityChanged);
     this.initAnimation();
 
     var header = document.getElementById(selectorId);
@@ -91,6 +93,14 @@ Christmasify["snow"] = {
     header.appendChild( this.renderer.domElement );
   },
 
+  visibilityChanged: function() {
+    if (document.hidden) {
+      cancelAnimationFrame( Christmasify.animationFrame );
+    } else {
+      Christmasify.animationFrame = requestAnimationFrame( Christmasify.snow.animate );
+    }
+  },
+
   initAnimation: function() {
     setTimeout(function(){
       Christmasify.snow.animate();
@@ -103,7 +113,7 @@ Christmasify["snow"] = {
   },
 
   animate: function() {
-    requestAnimationFrame( Christmasify.snow.animate );
+    Christmasify.animationFrame = requestAnimationFrame( Christmasify.snow.animate );
 
     var delta = Christmasify.snow.clock.getDelta(),
       elapsedTime = Christmasify.snow.clock.getElapsedTime();
